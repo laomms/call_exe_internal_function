@@ -156,5 +156,18 @@ int result = pMyFunction(AgrData.agr1, AgrData.agr2);
 
 主程序读取共享出来的结果：
 ```c
-
+    Sleep(200);
+    HANDLE hMapFile = OpenFileMappingA(FILE_MAP_READ, FALSE, SharedName);
+    if (!hMapFile)
+    {
+        MessageBoxA(nullptr, "Failed to open file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    lpBuffer = (LPTSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, SharedSize);
+    if (lpBuffer == NULL)
+    {
+        MessageBoxA(nullptr, "Failed to map shared memory!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    CopyMemory(&AgrData, lpBuffer, SharedSize);
 ```

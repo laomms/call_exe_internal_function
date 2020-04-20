@@ -171,3 +171,19 @@ int result = pMyFunction(AgrData.agr1, AgrData.agr2);
     }
     CopyMemory(&AgrData, lpBuffer, SharedSize);
 ```
+
+剩下就是注入的问题，没注入一切空谈：
+```c
+    const char pName[] = "D:/HOOK/Debug/Client.exe";
+    char LibraryName[] = "D:/HOOK/Debug/MyDLL.dll";
+    
+    PROCESS_INFORMATION pi;
+    STARTUPINFOA si = { 0 };
+    CreateProcessA("D:/HOOK/callback/Debug/Client.exe", nullptr, pSec, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
+    int LibraryNameSize = strlen(LibraryName) + 1;
+    AllocatedMemory = VirtualAllocEx(pi.hProcess, NULL, LibraryNameSize, MEM_COMMIT, PAGE_READWRITE);
+    WriteProcessMemory(pi.hProcess, AllocatedMemory, LibraryName, LibraryNameSize, NULL);
+    PTHREAD_START_ROUTINE ThreadRoutine = (PTHREAD_START_ROUTINE)
+    GetProcAddress(GetModuleHandle(L"Kernel32"), "LoadLibraryA");
+    hThread = CreateRemoteThread(pi.hProcess, NULL, 0, ThreadRoutine, AllocatedMemory, 0, NULL);
+```

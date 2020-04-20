@@ -132,3 +132,26 @@ struct TAgrList
     }
     CopyMemory(&AgrData, lpBuffer, SharedSize);
 ```
+dll读取共享内存并用这两个参数参与函数计算结构，然后把结果写入共享内存：
+```c
+int result = pMyFunction(AgrData.agr1, AgrData.agr2);
+
+    char buffer[32];
+    sprintf_s(buffer, "%d", result);
+    MessageBoxA(NULL, buffer, "Dll Title", MB_ICONINFORMATION);   
+    hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, SharedSize, SharedName);
+    if (hMapFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to create file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    lpMemFile = MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    if (lpMemFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to map shared memory!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    memset(lpMemFile, 0, SharedSize);
+    AgrData.agr3 = result;
+    memcpy(lpMemFile, &AgrData, sizeof(TAgrList));
+```
+
+

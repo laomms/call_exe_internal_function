@@ -69,15 +69,66 @@ DWORD FindPattern(char* module, char* pattern, char* mask)
 ```c
     typedef int(__stdcall* pFunctionAddress)(int a, int b);
     pFunctionAddress pMyFunction = (pFunctionAddress)(funcptr);
-    int result = pMyFunction(data.agr1, data.agr2);
+    int result = pMyFunction(AgrData.agr1, AgrData.agr2);
 ```
 由于没有解决重定位的问题把这个指针传回给主程序也没用，主程序中不能直接调用这个函数，但是注入DLL后，DLL中是可以任意调用这个函数，但是这两个参数必须从主程序获取，而且得到计算结果后还得送回给主程序。这样就变相的实现主程序调用了这个函数。剩下来就利用内存共享实现传递参数。先在主程序定义一个结构用于传递参数，把这个结构写入内存后共享给DLL，DLL读取内存后把参数取出去调用这个函数计算结果，得到结果后重新写入内存，再由主程序读取这个结构获取计算结果：
 ```c
+struct TAgrList
+{
+    DWORD agr1 = 0;
+    DWORD agr2 = 0;
+    DWORD agr3 = 0;
+};
+#define SharedSize sizeof(TAgrList)
+#define SharedName "Global\Injected"
+```
+```c
+  TAgrList AgrData;
+    hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE, NULL, PAGE_READWRITE, 0, SharedSize, SharedName);
+    if (hMapFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to create file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+
+
+    lpMemFile = MapViewOfFile(hMapFile, FILE_MAP_ALL_ACCESS, 0, 0, 0);
+    if (lpMemFile == nullptr) {
+        MessageBoxA(nullptr, "Failed to map shared memory!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+
+    memset(lpMemFile, 0, SharedSize);
+    AgrData.agr1 = 1;
+    AgrData.agr2 = 2;
+    AgrData.agr3 = 0;
+    memcpy(lpMemFile, &AgrData, sizeof(TAgrList));
 
 ```
-
-
-
-
-
-
+这里我们把参数1和参数2设置好，写入共享内存供dll读取，这个是主程序要参数计算的两个参数。
+dll方用于读取的代码，注意共享名和和数据结构：
+```c
+struct TAgrList
+{
+    DWORD agr1 = 0;
+    DWORD agr2 = 0;
+    DWORD agr3 = 0;
+};
+#define SharedSize sizeof(TAgrList)
+#define SharedName "Global\Injected"
+```
+```c
+    TAgrList AgrData; 
+    HANDLE hMapFile = OpenFileMappingA(FILE_MAP_READ, FALSE, SharedName);
+    if (!hMapFile)
+    {
+        MessageBoxA(nullptr, "Failed to open file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    lpBuffer = (LPTSTR)MapViewOfFile(hMapFile, FILE_MAP_READ, 0, 0, SharedSize);
+    if (lpBuffer == NULL)
+    {
+        MessageBoxA(nullptr, "Failed to map shared memory!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);
+        return FALSE;
+    }
+    CopyMemory(&AgrData, lpBuffer, SharedSize);
+```

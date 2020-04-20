@@ -89,7 +89,7 @@ struct TAgrList
     DWORD agr3 = 0;
 };
 #define SharedSize sizeof(TAgrList)
-#define SharedName "Global\Injected"
+#define SharedName "Global\\Injected"
 ```
 ```c
   TAgrList AgrData;
@@ -123,7 +123,7 @@ struct TAgrList
     DWORD agr3 = 0;
 };
 #define SharedSize sizeof(TAgrList)
-#define SharedName "Global\Injected"
+#define SharedName "Global\\Injected"
 ```
 ```c
     TAgrList AgrData; 

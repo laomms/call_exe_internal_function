@@ -179,7 +179,7 @@ int result = pMyFunction(AgrData.agr1, AgrData.agr2);
     
     PROCESS_INFORMATION pi;
     STARTUPINFOA si = { 0 };
-    CreateProcessA("D:/HOOK/callback/Debug/Client.exe", nullptr, pSec, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
+      CreateProcessA(pName, nullptr, pSec, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
     int LibraryNameSize = strlen(LibraryName) + 1;
     AllocatedMemory = VirtualAllocEx(pi.hProcess, NULL, LibraryNameSize, MEM_COMMIT, PAGE_READWRITE);
     WriteProcessMemory(pi.hProcess, AllocatedMemory, LibraryName, LibraryNameSize, NULL);
@@ -187,3 +187,5 @@ int result = pMyFunction(AgrData.agr1, AgrData.agr2);
     GetProcAddress(GetModuleHandle(L"Kernel32"), "LoadLibraryA");
     hThread = CreateRemoteThread(pi.hProcess, NULL, 0, ThreadRoutine, AllocatedMemory, 0, NULL);
 ```
+
+

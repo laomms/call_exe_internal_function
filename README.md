@@ -154,4 +154,7 @@ int result = pMyFunction(AgrData.agr1, AgrData.agr2);
     memcpy(lpMemFile, &AgrData, sizeof(TAgrList));
 ```
 
+主程序读取共享出来的结果：
+```c
 
+```

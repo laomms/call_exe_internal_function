@@ -19,11 +19,7 @@ int __stdcall myFunc(int a, int b) {
 
 首先写要注入的dll，先把这个查找函数地址的实现：
 ```c
-  char ProcessName[] = "Client.exe";
-    MODULEINFO modinfo = { 0 };
-    HMODULE hModule = GetModuleHandleA(ProcessName);
-    if (hModule == 0)
-        return 0;        
+    char ProcessName[] = "Client.exe";
     char BytePattern[] = "\x55\x8B\xEC\x81\xEC\x00\x00\x00\x00\x53\x56\x57\x8D\xBD\x00\x00\x00\x00\xB9\x00\x00\x00\x00\xB8\x00\x00\x00\x00\xF3\xAB\xA1\x00\x00\x00\x00\x33\xC5\x89\x45\xFC\xB9\x00\x00\x00\x00\xE8\x00\x00\x00\x00\xA1\x00\x00\x00\x00\x03\x45\x08";
     char ByteMask[] = "xxxxx????xxxxx????x????x????xxx????xxxxxx????x????x????xxx";
     DWORD funcptr = FindPattern(ProcessName, BytePattern, ByteMask);
@@ -69,3 +65,19 @@ DWORD FindPattern(char* module, char* pattern, char* mask)
     return NULL;
 }
 ```
+函数指针funcptr已经找到了，调用就简单了。这是个标准的函数，就两个参数。
+```c
+    typedef int(__stdcall* pFunctionAddress)(int a, int b);
+    pFunctionAddress pMyFunction = (pFunctionAddress)(funcptr);
+    int result = pMyFunction(data.agr1, data.agr2);
+```
+由于没有解决重定位的问题把这个指针传回给主程序也没用，主程序中不能直接调用这个函数，但是注入DLL后，DLL中是可以任意调用这个函数，但是这两个参数必须从主程序获取，而且得到计算结果后还得送回给主程序。这样就变相的实现主程序调用了这个函数。剩下来就利用内存共享实现传递参数。先在主程序定义一个结构用于传递参数，把这个结构写入内存后共享给DLL，DLL读取内存后把参数取出去调用这个函数计算结果，得到结果后重新写入内存，再由主程序读取这个结构获取计算结果：
+```c
+
+```
+
+
+
+
+
+

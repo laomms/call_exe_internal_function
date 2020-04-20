@@ -13,6 +13,12 @@ int __stdcall myFunc(int a, int b) {
     MessageBoxA(NULL, buffer, lpCaptions, MB_ICONINFORMATION);
     return d;
 }
+
+int main()
+{  
+    myFunc(0, 0);
+    return 0;
+}
 ```
 就是一个简单的加法，但是其中有用了全局变量参数计算。先找到这个函数的特征码。用IDA很容易实现:   
 ![image](https://github.com/laomms/call_exe_internal_function/blob/master/01.png)   

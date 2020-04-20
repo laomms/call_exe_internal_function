@@ -197,5 +197,5 @@ int result = pMyFunction(AgrData.agr1, AgrData.agr2);
     hThread = CreateRemoteThread(pi.hProcess, NULL, 0, ThreadRoutine, AllocatedMemory, 0, NULL);
 ```
 
-注入成功后，如果按照上面的代码得到结果应该是19。
+注入成功后，如果按照上面的代码得到结果应该是19。   
 ![image](https://github.com/laomms/call_exe_internal_function/blob/master/02.png)   

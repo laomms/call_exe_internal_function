@@ -175,6 +175,10 @@ dll读取共享内存并用这两个参数参与函数计算结构，然后把�
         return FALSE;
     }
     CopyMemory(&AgrData, lpBuffer, SharedSize);
+    //测试下结果
+    char buffer[32];
+    sprintf_s(buffer, "%d", AgrData.agr3);
+    MessageBoxA(NULL, buffer, "MainTitle", MB_ICONINFORMATION);
 ```
 
 剩下就是注入的问题，没注入一切空谈：

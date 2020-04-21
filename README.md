@@ -181,7 +181,7 @@ dll读取共享内存并用这两个参数参与函数计算结构，然后把�
     MessageBoxA(NULL, buffer, "MainTitle", MB_ICONINFORMATION);
 ```
 主程序要先映射参数到内存，然后注入，再在内存中读出结果。
-所以必须有个注入过程，没注入一切空谈：
+所以中间必须有个注入过程，没注入一切空谈：
 ```c
     const char pName[] = "D:/HOOK/Debug/Client.exe";
     char LibraryName[] = "D:/HOOK/Debug/MyDLL.dll";
@@ -197,7 +197,7 @@ dll读取共享内存并用这两个参数参与函数计算结构，然后把�
     hThread = CreateRemoteThread(pi.hProcess, NULL, 0, ThreadRoutine, AllocatedMemory, 0, NULL);
 ```
 
-注入成功后，如果按照上面的代码得到结果应该是6+1+2+10=19。   
+一切就绪后，运行主程序，如果按照上面的代码得到结果应该是6+1+2+10=19。   
 ![image](https://github.com/laomms/call_exe_internal_function/blob/master/02.png)   
 
 如果要设置共享的内存安全等级，只要添加：

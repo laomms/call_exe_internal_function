@@ -143,11 +143,7 @@ struct TAgrList
 ```
 dll读取共享内存并用这两个参数参与函数计算结构，然后把结果写入共享内存：
 ```c
-int result = pMyFunction(AgrData.agr1, AgrData.agr2);
-
-    char buffer[32];
-    sprintf_s(buffer, "%d", result);
-    MessageBoxA(NULL, buffer, "Dll Title", MB_ICONINFORMATION);   
+    int result = pMyFunction(AgrData.agr1, AgrData.agr2);    
     hMapFile = CreateFileMappingA(INVALID_HANDLE_VALUE, nullptr, PAGE_READWRITE, 0, SharedSize, SharedName);
     if (hMapFile == nullptr) {
         MessageBoxA(nullptr, "Failed to create file mapping!", "DLL_PROCESS_ATTACH", MB_OK | MB_ICONERROR);

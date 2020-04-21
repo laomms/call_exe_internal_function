@@ -195,3 +195,21 @@ dll读取共享内存并用这两个参数参与函数计算结构，然后把�
 
 注入成功后，如果按照上面的代码得到结果应该是19。   
 ![image](https://github.com/laomms/call_exe_internal_function/blob/master/02.png)   
+
+如果要设置共享的内存安全等级，只要添加：
+```c
+if (!InitializeSecurityDescriptor(&SecDesc, SECURITY_DESCRIPTOR_REVISION))
+        throw std::runtime_error("InitializeSecurityDescriptor error");
+    if (!SetSecurityDescriptorDacl(&SecDesc, true, NULL, false))
+        throw std::runtime_error("SetSecurityDescriptorDacl error");
+
+    SecAttr.nLength = sizeof(SecAttr);
+    SecAttr.lpSecurityDescriptor = &SecDesc;
+    SecAttr.bInheritHandle = TRUE;
+    pSec = &SecAttr;
+```
+然后创建进程是第三个参数调用这个安全属性：
+```c
+hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, pSec, PAGE_READWRITE, NULL, SharedSize, SharedName);
+CreateProcessA(pName, nullptr, pSec, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi)
+```

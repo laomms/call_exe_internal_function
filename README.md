@@ -180,8 +180,8 @@ dll读取共享内存并用这两个参数参与函数计算结构，然后把�
     sprintf_s(buffer, "%d", AgrData.agr3);
     MessageBoxA(NULL, buffer, "MainTitle", MB_ICONINFORMATION);
 ```
-
-剩下就是注入的问题，没注入一切空谈：
+主程序要先映射参数到内存，然后注入，再在内存中读出结果。
+所以必须有个注入过程，没注入一切空谈：
 ```c
     const char pName[] = "D:/HOOK/Debug/Client.exe";
     char LibraryName[] = "D:/HOOK/Debug/MyDLL.dll";

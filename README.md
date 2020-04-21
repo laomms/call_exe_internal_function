@@ -192,8 +192,7 @@ dll读取共享内存并用这两个参数参与函数计算结构，然后把�
     int LibraryNameSize = strlen(LibraryName) + 1;
     AllocatedMemory = VirtualAllocEx(pi.hProcess, NULL, LibraryNameSize, MEM_COMMIT, PAGE_READWRITE);
     WriteProcessMemory(pi.hProcess, AllocatedMemory, LibraryName, LibraryNameSize, NULL);
-    PTHREAD_START_ROUTINE ThreadRoutine = (PTHREAD_START_ROUTINE)
-    GetProcAddress(GetModuleHandle(L"Kernel32"), "LoadLibraryA");
+    PTHREAD_START_ROUTINE ThreadRoutine = (PTHREAD_START_ROUTINE)GetProcAddress(GetModuleHandle(L"Kernel32"), "LoadLibraryA");    
     hThread = CreateRemoteThread(pi.hProcess, NULL, 0, ThreadRoutine, AllocatedMemory, 0, NULL);
 ```
 

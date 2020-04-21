@@ -184,7 +184,7 @@ dll读取共享内存并用这两个参数参与函数计算结构，然后把�
     
     PROCESS_INFORMATION pi;
     STARTUPINFOA si = { 0 };
-      CreateProcessA(pName, nullptr, pSec, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
+    CreateProcessA(pName, nullptr, NULL, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi);
     int LibraryNameSize = strlen(LibraryName) + 1;
     AllocatedMemory = VirtualAllocEx(pi.hProcess, NULL, LibraryNameSize, MEM_COMMIT, PAGE_READWRITE);
     WriteProcessMemory(pi.hProcess, AllocatedMemory, LibraryName, LibraryNameSize, NULL);

@@ -217,3 +217,31 @@ if (!InitializeSecurityDescriptor(&SecDesc, SECURITY_DESCRIPTOR_REVISION))
 hMapFile = CreateFileMapping(INVALID_HANDLE_VALUE, pSec, PAGE_READWRITE, NULL, SharedSize, SharedName);
 CreateProcessA(pName, nullptr, pSec, NULL, TRUE, CREATE_SUSPENDED, NULL, NULL, &si, &pi)
 ```
+有些系统进程注入需要主程序提升权限才能注入：
+```c
+BOOL EnablePrivilege(BOOL enable)
+{
+    // 得到令牌句柄
+    HANDLE hToken = NULL;
+    if (!OpenProcessToken(GetCurrentProcess(), TOKEN_ADJUST_PRIVILEGES | TOKEN_QUERY | TOKEN_READ, &hToken))
+        return FALSE;
+
+    // 得到特权值
+    LUID luid;
+    if (!LookupPrivilegeValue(NULL, SE_DEBUG_NAME, &luid))
+        return FALSE;
+
+    // 提升令牌句柄权限
+    TOKEN_PRIVILEGES tp = {};
+    tp.PrivilegeCount = 1;
+    tp.Privileges[0].Luid = luid;
+    tp.Privileges[0].Attributes = enable ? SE_PRIVILEGE_ENABLED : 0;
+    if (!AdjustTokenPrivileges(hToken, FALSE, &tp, 0, NULL, NULL))
+        return FALSE;
+
+    // 关闭令牌句柄
+    CloseHandle(hToken);
+    return TRUE;
+}
+```
+在int main()先EnablePrivilege(TRUE)然后开始注入工作。

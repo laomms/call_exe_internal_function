@@ -23,7 +23,7 @@ int main()
 ```
 ![image](https://github.com/laomms/call_exe_internal_function/blob/master/00.png)   
 现实中目标程序都是别人的，而且如果是windows系统程序，每个版本这个函数的rva都不一样。所以我通过搜索特征码来定位函数位置。
-先找到这个函数的特征码。用IDA很容易实现:   
+先找到这个函数的特征码。用IDA插件sigmaker很容易实现:   
 ![image](https://github.com/laomms/call_exe_internal_function/blob/master/01.png)   
 
 首先写要注入的dll，先把这个查找函数地址的实现：
